@@ -11,5 +11,6 @@ namespace ShopTARpe25.Data
         {
 
         }
+        //teha Core projekti alla Domain nimega kaust ja sinna class nimega Spaceship
     }
 }
