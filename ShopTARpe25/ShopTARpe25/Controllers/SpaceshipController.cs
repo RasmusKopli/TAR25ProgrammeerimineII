@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ShopTARpe25.Models.Spaceship;
 using ShopTARpe25.Core.Dto;
 using ShopTARpe25.Core.ServiceInterface;
-using ShopTARpe25.Models.Spaceship;
+
 
 namespace ShopTARpe25.Controllers
 {
@@ -19,12 +20,13 @@ namespace ShopTARpe25.Controllers
             _spaceshipService = spaceshipService;
         }
 
+
         public IActionResult Index()
         {
             return View();
         }
 
-        //Kui kasutaja klikib "Create" nuppu, siis see meetod käivitatakse
+        //kui kasutaja klikib "Create" nuppu, siis see meetod käivitatakse
         //tagastab kasutajale vormi, kuhu saab sisestada andmed
         [HttpGet]
         public IActionResult Create()
@@ -32,7 +34,7 @@ namespace ShopTARpe25.Controllers
             return View();
         }
 
-        //Kui oled teinud vormi, siis see meetod käivitatakse
+        //kui oled teinud vormi, siis see meetod käivitatakse
         //saadab andmed serverisse, kus need salvestatakse andmebaasi
         [HttpPost]
         public async Task<IActionResult> Create(SpaceshipCreateViewModel vm)
