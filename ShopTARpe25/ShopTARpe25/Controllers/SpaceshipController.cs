@@ -3,6 +3,7 @@ using ShopTARpe25.Models.Spaceship;
 using ShopTARpe25.Core.Dto;
 using ShopTARpe25.Core.ServiceInterface;
 using ShopTARpe25.Data;
+using Microsoft.Identity.Client;
 
 
 namespace ShopTARpe25.Controllers
@@ -73,6 +74,38 @@ namespace ShopTARpe25.Controllers
             var result = await _spaceshipService.Create(dto);
 
             return RedirectToAction(nameof(Index));
+        }
+
+        //tuleb teha Details meetod
+        //see kutsub välja interface'ist service meetodi
+
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid id)
+        {
+            //meetodi kutsumine interface'ist
+            var spaceship = await _spaceshipService.DetailsAync(id);
+
+            //vea käsitlus
+            //suunab vaatele NotFound, kui andmeid ei ole
+            if (spaceship == null)
+            {
+                return NotFound();
+            }
+
+            //tuleb tehva ViewModel ja see siin välja kutsuda
+            //ära map-ida vm ja Domain
+            var vm = new SpaceshipDetailsViewModel();
+
+            vm.Id = spaceship.Id;
+            vm.Name = spaceship.Name;
+            vm.Classification = spaceship.Classification;
+            vm.BuiltDate = spaceship.BuiltDate;
+            vm.Crew = spaceship.Crew;
+            vm.EnginePower = spaceship.EnginePower;
+            vm.CreatedAt = spaceship.CreatedAt;
+            vm.ModifiedAt = spaceship.ModifiedAt;
+
+            return View();
         }
     }
 }

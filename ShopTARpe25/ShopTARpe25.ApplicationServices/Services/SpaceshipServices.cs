@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using ShopTARpe25.Core.Domain;
 using ShopTARpe25.Core.Dto;
 using ShopTARpe25.Core.ServiceInterface;
@@ -43,6 +44,17 @@ namespace ShopTARpe25.ApplicationServices.Services
             await _context.SaveChangesAsync();
 
             return domain;
+        }
+
+        //siia teha meetod nimega DetailsAsync
+        //see ainult pärib andmed contextist
+
+        public async Task<Spaceship> DetailsAync(Guid id)
+        {
+            var result = await _context.Spaceships
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            return result;
         }
     }
 }
