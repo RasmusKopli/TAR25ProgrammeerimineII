@@ -49,7 +49,7 @@ namespace ShopTARpe25.ApplicationServices.Services
         //siia teha meetod nimega DetailsAsync
         //see ainult pärib andmed contextist
 
-        public async Task<Spaceship> DetailsAync(Guid id)
+        public async Task<Spaceship> DetailsAsync(Guid id)
         {
             var result = await _context.Spaceships
                 .FirstOrDefaultAsync(x => x.Id == id);
@@ -74,6 +74,17 @@ namespace ShopTARpe25.ApplicationServices.Services
             await _context.SaveChangesAsync();
 
             return spaceship;
+        }
+
+        public async Task<Spaceship> Delete(Guid id)
+        {
+            var result = await _context.Spaceships
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            _context.Spaceships.Remove(result);
+            await _context.SaveChangesAsync();
+
+            return result;
         }
     }
 }

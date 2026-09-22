@@ -4,6 +4,7 @@ using ShopTARpe25.Core.Dto;
 using ShopTARpe25.Core.ServiceInterface;
 using ShopTARpe25.Data;
 using Microsoft.Identity.Client;
+using ShopTARpe25.Core.Domain;
 
 
 namespace ShopTARpe25.Controllers
@@ -83,7 +84,7 @@ namespace ShopTARpe25.Controllers
         public async Task<IActionResult> Details(Guid id)
         {
             //meetodi kutsumine interface'ist
-            var spaceship = await _spaceshipService.DetailsAync(id);
+            var spaceship = await _spaceshipService.DetailsAsync(id);
 
             //vea käsitlus
             //suunab vaatele NotFound, kui andmeid ei ole
@@ -111,7 +112,7 @@ namespace ShopTARpe25.Controllers
         [HttpGet]
         public async Task<IActionResult> Update(Guid id)
         {
-            var spaceship = await _spaceshipService.DetailsAync(id);
+            var spaceship = await _spaceshipService.DetailsAsync(id);
 
             if (spaceship == null)
             {
@@ -148,6 +149,43 @@ namespace ShopTARpe25.Controllers
             };
 
             var result = await _spaceshipService.Update(dto);
+
+            if (result == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var spaceship = await _spaceshipService.DetailsAsync(id);
+
+            if (spaceship == null)
+            {
+                return NotFound();
+            }
+
+            var vm = new SpaceshipDeleteViewModel();
+
+            vm.Id = spaceship.Id;
+            vm.Name = spaceship.Name;
+            vm.Classification = spaceship.Classification;
+            vm.Crew = spaceship.Crew;
+            vm.EnginePower = spaceship.EnginePower;
+            vm.BuiltDate = spaceship.BuiltDate;
+            vm.CreatedAt = spaceship.CreatedAt;
+            vm.ModifiedAt = spaceship.ModifiedAt;
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteConfirmation(Guid id)
+        {
+            var result = await _spaceshipService.Delete(id);
 
             if (result == null)
             {
