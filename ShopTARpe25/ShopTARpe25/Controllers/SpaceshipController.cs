@@ -5,6 +5,7 @@ using ShopTARpe25.Core.ServiceInterface;
 using ShopTARpe25.Data;
 using Microsoft.Identity.Client;
 using ShopTARpe25.Core.Domain;
+using System.Runtime.CompilerServices;
 
 
 namespace ShopTARpe25.Controllers
@@ -93,6 +94,14 @@ namespace ShopTARpe25.Controllers
                 return NotFound();
             }
 
+            var images = await _context.FileToApis
+                .Where(x => x.SpaceshipId == id)
+                .Sekect(y => new ImageViewModel
+                {
+                    FilePath = y.ExistingFilePath,
+                    ImageId = y.Id
+                }).ToArrayAsync();
+
             //tuleb tehva ViewModel ja see siin välja kutsuda
             //ära map-ida vm ja Domain
             var vm = new SpaceshipDetailsViewModel();
@@ -105,6 +114,7 @@ namespace ShopTARpe25.Controllers
             vm.EnginePower = spaceship.EnginePower;
             vm.CreatedAt = spaceship.CreatedAt;
             vm.ModifiedAt = spaceship.ModifiedAt;
+            vm.Images.AddRange(images);
 
             return View();
         }
