@@ -96,9 +96,9 @@ namespace ShopTARpe25.Controllers
 
             var images = await _context.FileToApis
                 .Where(x => x.SpaceshipId == id)
-                .Sekect(y => new ImageViewModel
+                .Select(y => new ImageViewModel
                 {
-                    FilePath = y.ExistingFilePath,
+                    FilePath = /*"~/multipleFileUpload/" +*/ y.ExistingFilePath,
                     ImageId = y.Id
                 }).ToArrayAsync();
 
@@ -177,6 +177,8 @@ namespace ShopTARpe25.Controllers
             {
                 return NotFound();
             }
+
+            var images = await _context.
 
             var vm = new SpaceshipDeleteViewModel();
 
