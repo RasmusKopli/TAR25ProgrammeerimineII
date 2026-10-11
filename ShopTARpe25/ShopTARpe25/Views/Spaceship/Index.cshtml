@@ -8,8 +8,6 @@
     <a asp-action="create" asp-controller="Spaceship" type="submit" class="btn btn-primary">Create</a>
 </div>
 
-test
-
 <div class="h1">
     Spaceship
 </div>
@@ -38,12 +36,11 @@ test
                             <a asp-action="details" asp-controller="Spaceship" asp-route-id="@spaceship.Id" type="submit" class="btn btn-info">Details</a>
                             <a asp-action="update" asp-controller="Spaceship" asp-route-id="@spaceship.Id" type="submit" class="btn btn-success">Update</a>
                             <a asp-action="delete" asp-controller="Spaceship" asp-route-id="@spaceship.Id" type="submit" class="btn btn-danger">Delete</a>
+
                         </td>
                     </tr>
                     rowNumber++;
                 }
-            </tbody>
+        </tbody>
     </table>
 </form>
-
-

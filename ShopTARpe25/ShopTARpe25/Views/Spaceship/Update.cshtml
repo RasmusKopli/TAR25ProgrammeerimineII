@@ -4,9 +4,9 @@
 
 <div>
     <form method="post" enctype="multipart/form-data">
-        <input asp-for="Id" type="hidden" />
-        <input asp-for="CreatedAt" type="hidden" />
-        <input asp-for="ModifiedAt" type="hidden" />
+        <input asp-for="Id" type="hidden"/>
+        <input asp-for="CreatedAt" type="hidden"/>
+        <input asp-for="ModifiedAt" type="hidden"/>
 
         <div class="form-group row">
             <label asp-for="Name" class="col-sm-2 col-form-label"></label>
@@ -43,7 +43,18 @@
             </div>
         </div>
 
+        @foreach (var file in Model.Images)
+        {
+            <partial name="_Images" model="file" />
+            <input asp-action="removeImage" asp-controller="spaceship" asp-route-imageId="@file.ImageId"
+                type="submit" class="btn btn-danger" value="Remove Image" />
+        }
+
         <input asp-action="Update" asp-controller="spaceship" type="submit" class="btn btn-success" value="Update" />
+        <a asp-action="Index" asp-controller="spaceship" class="btn btn-info">Back to List</a>
 
     </form>
 </div>
+
+
+

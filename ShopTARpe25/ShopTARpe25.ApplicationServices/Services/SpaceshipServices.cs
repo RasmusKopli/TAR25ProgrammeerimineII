@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using ShopTARpe25.Core.Domain;
 using ShopTARpe25.Core.Dto;
 using ShopTARpe25.Core.ServiceInterface;
@@ -13,14 +12,18 @@ namespace ShopTARpe25.ApplicationServices.Services
     public class SpaceshipServices : ISpaceshipServices
     {
         private readonly ShopTARpe25Context _context;
+        private readonly IFileServices _fileServices;
 
         public SpaceshipServices
             (
-                ShopTARpe25Context context
+                ShopTARpe25Context context,
+                IFileServices fileServices
             )
         {
             _context = context;
+            _fileServices = fileServices;
         }
+
         public async Task<Spaceship> Create(SpaceshipDto dto)
         {
             Spaceship domain = new();
@@ -33,6 +36,10 @@ namespace ShopTARpe25.ApplicationServices.Services
             domain.EnginePower = dto.EnginePower;
             domain.CreatedAt = DateTime.Now;
             domain.ModifiedAt = DateTime.Now;
+            //peame saama File teenuse välja kutsuda,
+            //mis salvestab failid serverisse
+            _fileServices.FilesToApi(dto, domain);
+
 
             //siia tuleb kood, mis salvestab domain
             //objekti andmebaasi
@@ -47,8 +54,7 @@ namespace ShopTARpe25.ApplicationServices.Services
         }
 
         //siia teha meetod nimega DetailsAsync
-        //see ainult pärib andmed contextist
-
+        //see ainult p'rib andmed contextist
         public async Task<Spaceship> DetailsAsync(Guid id)
         {
             var result = await _context.Spaceships

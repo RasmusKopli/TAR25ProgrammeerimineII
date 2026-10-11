@@ -3,9 +3,7 @@ using ShopTARpe25.Models.Spaceship;
 using ShopTARpe25.Core.Dto;
 using ShopTARpe25.Core.ServiceInterface;
 using ShopTARpe25.Data;
-using Microsoft.Identity.Client;
-using ShopTARpe25.Core.Domain;
-using System.Runtime.CompilerServices;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace ShopTARpe25.Controllers
@@ -14,24 +12,26 @@ namespace ShopTARpe25.Controllers
     {
         private readonly ISpaceshipServices _spaceshipService;
         private readonly ShopTARpe25Context _context;
-
+        private readonly IFileServices _fileService;
         //teha constructor et saaks kasutada teenust, mis on
         //defineeritud ISpaceshipServices liideses
         //lisage Context
         public SpaceshipController
             (
                 ISpaceshipServices spaceshipService,
-                ShopTARpe25Context context
+                ShopTARpe25Context context,
+                IFileServices fileService
             )
         {
             _spaceshipService = spaceshipService;
             _context = context;
+            _fileService = fileService;
         }
 
 
         public IActionResult Index()
         {
-            //loome vaheinstantsi domaini ja ViewModeli vahel
+            //loome vaheinstantsi domaini ja viewModeli vahel.
             var result = _context.Spaceships
                 .Select(x => new SpaceshipIndexViewModel
                 {
@@ -43,7 +43,6 @@ namespace ShopTARpe25.Controllers
                     EnginePower = x.EnginePower
                 });
 
-
             return View(result);
         }
 
@@ -52,7 +51,9 @@ namespace ShopTARpe25.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            SpaceshipCreateViewModel vm = new();
+
+            return View(vm);
         }
 
         //kui oled teinud vormi, siis see meetod käivitatakse
@@ -69,7 +70,15 @@ namespace ShopTARpe25.Controllers
                 Classification = vm.Classification,
                 BuiltDate = vm.BuiltDate,
                 Crew = vm.Crew,
-                EnginePower = vm.EnginePower
+                EnginePower = vm.EnginePower,
+                Files = vm.Files,
+                FileToApiDtos = vm.Image
+                    .Select(file => new FileToApiDto
+                    {
+                        Id = file.ImageId,
+                        ExistingFilePath = file.FilePath,
+                        SpaceshipId = file.SpaceshipId
+                    }).ToArray()
             };
 
             //kutsuda teenuse meetodit, mis salvestab andmed andmebaasi
@@ -79,15 +88,15 @@ namespace ShopTARpe25.Controllers
         }
 
         //tuleb teha Details meetod
-        //see kutsub välja interface'ist service meetodi
+        //see kutsub v'lja interfacest service meetodi
 
         [HttpGet]
         public async Task<IActionResult> Details(Guid id)
         {
-            //meetodi kutsumine interface'ist
+            //meetodi kutsumine interfacest
             var spaceship = await _spaceshipService.DetailsAsync(id);
 
-            //vea käsitlus
+            //veakäsitlus
             //suunab vaatele NotFound, kui andmeid ei ole
             if (spaceship == null)
             {
@@ -99,11 +108,12 @@ namespace ShopTARpe25.Controllers
                 .Select(y => new ImageViewModel
                 {
                     FilePath = /*"~/multipleFileUpload/" +*/ y.ExistingFilePath,
-                    ImageId = y.Id
+                    ImageId = y.Id,
+                    SpaceshipId = y.SpaceshipId
                 }).ToArrayAsync();
 
-            //tuleb tehva ViewModel ja see siin välja kutsuda
-            //ära map-ida vm ja Domain
+            //tuleb teha viewModel ja see siin välja kutsuda
+            //ära map-ida vm ja domain
             var vm = new SpaceshipDetailsViewModel();
 
             vm.Id = spaceship.Id;
@@ -116,7 +126,7 @@ namespace ShopTARpe25.Controllers
             vm.ModifiedAt = spaceship.ModifiedAt;
             vm.Images.AddRange(images);
 
-            return View();
+            return View(vm);
         }
 
         [HttpGet]
@@ -129,6 +139,15 @@ namespace ShopTARpe25.Controllers
                 return NotFound();
             }
 
+            var images = await _context.FileToApis
+                .Where(x => x.SpaceshipId == id)
+                .Select(y => new ImageViewModel
+                {
+                    FilePath = y.ExistingFilePath,
+                    ImageId = y.Id,
+                    SpaceshipId = y.SpaceshipId
+                }).ToArrayAsync();
+
             var vm = new SpaceshipUpdateViewModel();
 
             vm.Id = spaceship.Id;
@@ -139,6 +158,7 @@ namespace ShopTARpe25.Controllers
             vm.EnginePower = spaceship.EnginePower;
             vm.CreatedAt = spaceship.CreatedAt;
             vm.ModifiedAt = spaceship.ModifiedAt;
+            vm.Images.AddRange(images);
 
             return View(vm);
         }
@@ -178,18 +198,29 @@ namespace ShopTARpe25.Controllers
                 return NotFound();
             }
 
-            var images = await _context.
+            var images = await _context.FileToApis
+                .Where(x => x.SpaceshipId == id)
+                .Select(y => new ImageViewModel
+                {
+                    FilePath = y.ExistingFilePath,
+                    ImageId = y.Id,
+                    SpaceshipId = y.SpaceshipId
+                }).ToArrayAsync();
+            //kirjuta kood, mis aitab näidata pilte, mis 
+            //kuuluvad konkreetsele kosmoselaevale
+            //kui hakkan kustutama, siis saan teada, mida ma kustutan 
 
             var vm = new SpaceshipDeleteViewModel();
 
             vm.Id = spaceship.Id;
             vm.Name = spaceship.Name;
             vm.Classification = spaceship.Classification;
+            vm.BuiltDate = spaceship.BuiltDate;
             vm.Crew = spaceship.Crew;
             vm.EnginePower = spaceship.EnginePower;
-            vm.BuiltDate = spaceship.BuiltDate;
             vm.CreatedAt = spaceship.CreatedAt;
             vm.ModifiedAt = spaceship.ModifiedAt;
+            vm.Images.AddRange(images);
 
             return View(vm);
         }
@@ -205,6 +236,26 @@ namespace ShopTARpe25.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveImage(ImageViewModel vm)
+        {
+            //tuleb ühendada dto ja viewModel, et saaks kasutada teenuse meetodit
+            var dto = new FileToApiDto()
+            {
+                Id = vm.ImageId
+            };
+
+            //kutsuda teenuse meetodit, mis kustutab pildi andmebaasist
+            var image = await _fileService.RemoveImageFromApi(dto);
+
+            if (image == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return RedirectToAction(nameof(Index)); 
         }
     }
 }
