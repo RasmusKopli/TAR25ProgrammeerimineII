@@ -93,7 +93,7 @@ namespace ShopTARpe25.ApplicationServices.Services
             foreach (var image in dto)
             {
                 var imageId = await _context.FileToApis
-                .FirstOrDefaultAsync(x => x.Id == image.Id);
+                    .FirstOrDefaultAsync(x => x.Id == image.Id);
 
                 var filePath = _webHost.ContentRootPath + "\\wwwroot\\multipleFileUpload\\"
                     + imageId.ExistingFilePath;
@@ -102,7 +102,6 @@ namespace ShopTARpe25.ApplicationServices.Services
                 {
                     File.Delete(filePath);
                 }
-
                 _context.FileToApis.Remove(imageId);
                 await _context.SaveChangesAsync();
             }
