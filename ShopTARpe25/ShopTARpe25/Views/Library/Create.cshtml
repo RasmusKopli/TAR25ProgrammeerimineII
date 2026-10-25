@@ -1,0 +1,47 @@
+﻿@model ShopTARpe25.Models.Library.BookCreateViewModel
+
+@{
+	ViewData["Title"] = "Add New Book";
+}
+
+<div class="container mt-4" style="max-width: 600px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white py-3">
+            <h4 class="mb-0">Add Book to Library</h4>
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label fw-bold">Book Title</label>
+                    <input asp-for="Title" class="form-control" placeholder="e.g., Pride and Prejudice" />
+                    <span asp-validation-for="Title" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Author" class="form-label fw-bold">Author</label>
+                    <input asp-for="Author" class="form-control" placeholder="e.g., Jane Austen, Anna Quindlen" />
+                    <span asp-validation-for="Author" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="PublishedYear" class="form-label fw-bold">Publication Date</label>
+                    <input asp-for="PublishedYear" class="form-control" type="date" />
+                    <span asp-validation-for="PublishedYear" class="text-danger small"></span>
+                </div>
+
+                <div class="d-flex justify-content-between pt-2 border-top">
+                    <a asp-action="Index" class="btn btn-outline-secondary">Back to Catalog</a>
+                    <button type="submit" class="btn btn-success px-4">Save Entry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
