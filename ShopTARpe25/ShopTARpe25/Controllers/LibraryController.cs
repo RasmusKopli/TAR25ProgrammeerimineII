@@ -6,7 +6,7 @@ using ShopTARpe25.Models.Library;
 
 namespace ShopTARpe25.Controllers
 {
-    public class LibraryController
+    public class LibraryController : Controller
     {
         private readonly ShopTARpe25Context _context;
 
@@ -30,7 +30,7 @@ namespace ShopTARpe25.Controllers
                     IsAvailable = x.IsAvailable
                 });
 
-            return base.View(result);
+            return View(result);
         }
     }
 }
