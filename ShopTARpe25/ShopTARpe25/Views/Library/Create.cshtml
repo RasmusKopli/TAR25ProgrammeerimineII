@@ -25,9 +25,9 @@
                     <span asp-validation-for="Author" class="text-danger small"></span>
                 </div>
 
-                <div class="mb-4">
-                    <label asp-for="PublishedYear" class="form-label fw-bold">Publication Date</label>
-                    <input asp-for="PublishedYear" class="form-control" type="date" />
+                <div class="mb-3">
+                    <label asp-for="PublishedYear" class="form-label fw-bold">Publication Year</label>
+                    <input asp-for="PublishedYear" class="form-control" type="number" min="1000" max="2100" />
                     <span asp-validation-for="PublishedYear" class="text-danger small"></span>
                 </div>
 

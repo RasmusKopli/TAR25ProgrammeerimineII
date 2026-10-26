@@ -10,6 +10,6 @@ namespace ShopTARpe25.Core.Domain
         public Guid BookId { get; set; }
         public Guid ReaderId { get; set; }
         public DateOnly LoanDate { get; set; }
-        public DateOnly ReturnDate { get; set; }
+        public DateOnly? ReturnDate { get; set; }
     }
 }

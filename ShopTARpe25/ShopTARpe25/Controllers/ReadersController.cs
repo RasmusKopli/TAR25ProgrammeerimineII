@@ -59,5 +59,64 @@ namespace ShopTARpe25.Controllers
 
             return View(vm);
         }
+
+        public IActionResult Details(Guid id)
+        {
+            var reader = _context.Readers.FirstOrDefault(r => r.Id == id);
+            if (reader == null)
+            {
+                return NotFound();
+            }
+
+            var readerLoans = _context.Loans.Where(l => l.ReaderId.ToString() == id.ToString()).ToList();
+
+            var borrowedBooks = readerLoans.Select(loan => {
+                var book = _context.Books.FirstOrDefault(b => b.Id.ToString() == loan.BookId.ToString());
+
+                return new BorrowedBookViewModel
+                {
+                    BookId = loan.BookId,
+                    Title = book?.Title ?? "Unknown Title",
+                    Author = book?.Author ?? "Unknown Author",
+                    LoanDate = loan.LoanDate,
+                    ReturnDate = loan.ReturnDate
+                };
+            }).ToList();
+
+            var viewModel = new ReaderDetailsViewModel
+            {
+                Id = reader.Id,
+                FullName = reader.FullName,
+                Email = reader.Email ?? "No Email Registered",
+                BorrowedBooks = borrowedBooks
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ReturnBook(Guid bookId, Guid readerId)
+        {
+            var activeLoan = _context.Loans
+                .AsEnumerable()
+                .FirstOrDefault(l => l.BookId.ToString() == bookId.ToString());
+
+            if (activeLoan != null)
+            {
+                _context.Loans.Remove(activeLoan);
+            }
+
+            var book = _context.Books.Find(bookId);
+            if (book != null)
+            {
+                book.IsAvailable = true;
+                _context.Books.Update(book);
+            }
+
+            _context.SaveChanges();
+
+            return RedirectToAction(nameof(Details), new { id = readerId });
+        }
     }
 }

@@ -39,8 +39,8 @@ namespace ShopTARpe25.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateOnly>("PublishedYear")
-                        .HasColumnType("date");
+                    b.Property<int>("PublishedYear")
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -83,7 +83,7 @@ namespace ShopTARpe25.Data.Migrations
                     b.Property<Guid>("ReaderId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateOnly>("ReturnDate")
+                    b.Property<DateOnly?>("ReturnDate")
                         .HasColumnType("date");
 
                     b.HasKey("Id");

@@ -11,6 +11,25 @@
 	<a asp-controller="Readers" asp-action="Index" class="btn btn-secondary">Manage Readers</a>
 </div>
 
+<div class="card bg-light p-3 mb-4">
+	<form asp-action="Index" method="get" class="row g-3 align-items-center">
+		<div class="col-md-5">
+			<label class="form-label fw-bold small text-muted">Search by Book Title</label>
+			<input type="text" name="searchTitle" class="form-control" placeholder="Enter title keywords..." value="@Context.Request.Query["searchTitle"]" />
+		</div>
+
+		<div class="col-md-3">
+			<label class="form-label fw-bold small text-muted">Filter by Year</label>
+			<input type="number" name="searchYear" class="form-control" placeholder="e.g. 2000" min="1000" max="2100" value="@Context.Request.Query["searchYear"]" />
+		</div>
+
+		<div class="col-md-4 d-flex align-items-end gap-2" style="padding-top: 30px;">
+			<button type="submit" class="btn btn-primary px-4">Filter Catalog</button>
+			<a asp-action="Index" class="btn btn-outline-secondary">Clear Filters</a>
+		</div>
+	</form>
+</div>
+
 <table class="table">
 	<thead>
 		<tr>
@@ -27,7 +46,6 @@
 				<td>@book.Title</td>
 				<td>@book.Author</td>
 				<td>@book.PublishedYear</td>
-				<td>@book.Location</td>
 				<td>
 					@if (book.IsAvailable)
 					{

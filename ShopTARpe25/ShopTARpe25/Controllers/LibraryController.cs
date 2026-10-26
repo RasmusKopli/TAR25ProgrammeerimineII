@@ -20,18 +20,34 @@ namespace ShopTARpe25.Controllers
         }
 
         //Index for Books/Library
-        public IActionResult Index()
+        public IActionResult Index(string searchTitle, int? searchYear)
         {
-            var result = _context.Books
-                .Select(x => new BookIndexViewModel
-                {
-                    Id = x.Id,
-                    Title = x.Title,
-                    Author = x.Author,
-                    PublishedYear = x.PublishedYear,
-                    IsAvailable = x.IsAvailable,
-                    Location = x.Location
-                });
+            // Alustame baaspäringuga
+            var query = from book in _context.Books
+                        select book;
+
+            // 1. Filtreerime pealkirja järgi (kui otsingukast pole tühi)
+            if (!string.IsNullOrEmpty(searchTitle))
+            {
+                query = query.Where(b => b.Title.Contains(searchTitle));
+            }
+
+            // 2. Filtreerime aasta järgi (kui otsingukast pole tühi)
+            if (searchYear.HasValue)
+            {
+                query = query.Where(b => b.PublishedYear == searchYear.Value);
+            }
+
+            // Viime andmed viewModeli struktuuri
+            var result = query.Select(book => new BookIndexViewModel
+            {
+                Id = book.Id,
+                Title = book.Title,
+                Author = book.Author,
+                PublishedYear = book.PublishedYear,
+                IsAvailable = book.IsAvailable,
+                Location = book.Location
+            }).ToList();
 
             return View(result);
         }
@@ -163,7 +179,7 @@ namespace ShopTARpe25.Controllers
                             BookId = domainBook.Id,
                             ReaderId = vm.SelectedReaderId.Value,
                             LoanDate = DateOnly.FromDateTime(DateTime.Today),
-                            ReturnDate = DateOnly.FromDateTime(DateTime.Today.AddDays(14))
+                            ReturnDate = null
                         };
                         await _context.Loans.AddAsync(newLoan);
                     }

@@ -1,0 +1,85 @@
+﻿@model ShopTARpe25.Models.Library.ReaderDetailsViewModel
+
+@{
+    ViewData["Title"] = "Reader Profile Details";
+}
+
+<div class="container mt-4" style="max-width: 900px;">
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
+            <h4 class="mb-0 fw-bold">Reader Profile Overview</h4>
+            <a asp-action="Index" class="btn btn-sm btn-outline-light">Back to Readers List</a>
+        </div>
+        <div class="card-body p-4 bg-light">
+            <div class="row">
+                <div class="col-sm-6 mb-3 mb-sm-0">
+                    <span class="text-muted d-block small fw-bold text-uppercase">Full Name</span>
+                    <strong class="fs-4 text-dark">@Model.FullName</strong>
+                </div>
+                <div class="col-sm-6">
+                    <span class="text-muted d-block small fw-bold text-uppercase">Email Address</span>
+                    <span class="fs-5 text-secondary">@Model.Email</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-secondary text-white py-3">
+            <h5 class="mb-0 fw-bold">Currently Borrowed Books</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Book Title</th>
+                        <th>Author</th>
+                        <th>Loaned Date</th>
+                        <th>Return Date</th>
+                        <th class="text-end px-4">Actions</th> <!-- Added actions header -->
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.BorrowedBooks.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                This reader currently has no active books checked out.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var book in Model.BorrowedBooks)
+                        {
+                            <tr>
+                                <td class="fw-bold text-dark">@book.Title</td>
+                                <td>@book.Author</td>
+                                <td>@book.LoanDate.ToString("dd.MM.yyyy")</td>
+                                <td>
+                                    @if (book.ReturnDate.HasValue)
+                                    {
+                                        <span class="badge bg-success">@book.ReturnDate.Value.ToString("dd.MM.yyyy")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small fs-6 italic">---</span>
+                                    }
+                                </td>
+                                <td class="text-end px-4">
+                                    <form asp-action="ReturnBook" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="bookId" value="@book.BookId" />
+                                        <input type="hidden" name="readerId" value="@Model.Id" />
+                                        
+                                        <button type="submit" class="btn btn-sm btn-success fw-bold px-3">Return Book</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

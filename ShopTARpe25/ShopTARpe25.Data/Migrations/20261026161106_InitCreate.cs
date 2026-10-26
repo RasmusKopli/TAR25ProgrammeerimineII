@@ -18,8 +18,9 @@ namespace ShopTARpe25.Data.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Author = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PublishedYear = table.Column<DateOnly>(type: "date", nullable: false),
-                    IsAvailable = table.Column<bool>(type: "bit", nullable: false)
+                    PublishedYear = table.Column<int>(type: "int", nullable: false),
+                    IsAvailable = table.Column<bool>(type: "bit", nullable: false),
+                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -34,7 +35,7 @@ namespace ShopTARpe25.Data.Migrations
                     BookId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ReaderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     LoanDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    ReturnDate = table.Column<DateOnly>(type: "date", nullable: false)
+                    ReturnDate = table.Column<DateOnly>(type: "date", nullable: true)
                 },
                 constraints: table =>
                 {

@@ -12,7 +12,7 @@ using ShopTARpe25.Data;
 namespace ShopTARpe25.Data.Migrations
 {
     [DbContext(typeof(ShopTARpe25Context))]
-    [Migration("20261026113440_InitCreate")]
+    [Migration("20261026161106_InitCreate")]
     partial class InitCreate
     {
         /// <inheritdoc />
@@ -38,8 +38,12 @@ namespace ShopTARpe25.Data.Migrations
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
 
-                    b.Property<DateOnly>("PublishedYear")
-                        .HasColumnType("date");
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PublishedYear")
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -82,7 +86,7 @@ namespace ShopTARpe25.Data.Migrations
                     b.Property<Guid>("ReaderId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateOnly>("ReturnDate")
+                    b.Property<DateOnly?>("ReturnDate")
                         .HasColumnType("date");
 
                     b.HasKey("Id");
