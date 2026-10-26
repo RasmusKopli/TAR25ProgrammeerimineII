@@ -12,8 +12,8 @@ using ShopTARpe25.Data;
 namespace ShopTARpe25.Data.Migrations
 {
     [DbContext(typeof(ShopTARpe25Context))]
-    [Migration("20261023115714_starter")]
-    partial class starter
+    [Migration("20261026113440_InitCreate")]
+    partial class InitCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -73,14 +73,14 @@ namespace ShopTARpe25.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("BookId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("BookId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateOnly>("LoanDate")
                         .HasColumnType("date");
 
-                    b.Property<int>("ReaderId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ReaderId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateOnly>("ReturnDate")
                         .HasColumnType("date");

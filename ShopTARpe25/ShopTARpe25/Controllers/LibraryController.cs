@@ -191,5 +191,49 @@ namespace ShopTARpe25.Controllers
 
             return View(vm);
         }
+
+        //Delete for books
+        [HttpGet]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var book = await _context.Books.FirstOrDefaultAsync(b => b.Id == id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new BookEditViewModel
+            {
+                Id = book.Id,
+                Title = book.Title,
+                Author = book.Author,
+                PublishedYear = book.PublishedYear
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        {
+            var book = await _context.Books.FindAsync(id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            var activeLoans = await _context.Loans.ToListAsync();
+            var bookLoan = activeLoans.FirstOrDefault(l => l.BookId.ToString() == id.ToString());
+            if (bookLoan != null)
+            {
+                _context.Loans.Remove(bookLoan);
+            }
+
+            _context.Books.Remove(book);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

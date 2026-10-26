@@ -70,14 +70,14 @@ namespace ShopTARpe25.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("BookId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("BookId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateOnly>("LoanDate")
                         .HasColumnType("date");
 
-                    b.Property<int>("ReaderId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ReaderId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateOnly>("ReturnDate")
                         .HasColumnType("date");

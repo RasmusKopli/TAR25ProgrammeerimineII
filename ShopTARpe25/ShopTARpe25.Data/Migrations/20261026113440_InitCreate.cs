@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ShopTARpe25.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class starter : Migration
+    public partial class InitCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -31,8 +31,8 @@ namespace ShopTARpe25.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    BookId = table.Column<int>(type: "int", nullable: false),
-                    ReaderId = table.Column<int>(type: "int", nullable: false),
+                    BookId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ReaderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     LoanDate = table.Column<DateOnly>(type: "date", nullable: false),
                     ReturnDate = table.Column<DateOnly>(type: "date", nullable: false)
                 },
