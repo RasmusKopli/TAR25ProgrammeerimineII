@@ -35,6 +35,10 @@ namespace ShopTARpe25.Data.Migrations
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateOnly>("PublishedYear")
                         .HasColumnType("date");
 

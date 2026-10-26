@@ -1,0 +1,12 @@
+﻿namespace ShopTARpe25.Models.Library
+{
+    public class ReaderIndexViewModel
+    {
+        public Guid Id { get; set; }
+        public string FullName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+
+
+        public int ActiveLoansCount { get; set; }
+    }
+}

@@ -29,7 +29,8 @@ namespace ShopTARpe25.Controllers
                     Title = x.Title,
                     Author = x.Author,
                     PublishedYear = x.PublishedYear,
-                    IsAvailable = x.IsAvailable
+                    IsAvailable = x.IsAvailable,
+                    Location = x.Location
                 });
 
             return View(result);
