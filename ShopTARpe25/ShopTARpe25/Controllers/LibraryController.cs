@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ShopTARpe25.Core.Domain;
 using ShopTARpe25.Data;
@@ -94,6 +95,101 @@ namespace ShopTARpe25.Controllers
             };
 
             return View(viewModel);
+        }
+
+        //Edit for Books
+        [HttpGet]
+        public async Task<IActionResult> Edit(Guid id)
+        {
+            var book = await _context.Books.FirstOrDefaultAsync(b => b.Id == id);
+            if (book == null) return NotFound();
+
+            var activeLoan = await _context.Loans.FirstOrDefaultAsync(l => l.BookId.ToString() == book.Id.ToString());
+
+
+            var viewModel = new BookEditViewModel
+            {
+                Id = book.Id,
+                Title = book.Title,
+                Author = book.Author,
+                PublishedYear = book.PublishedYear,
+                SelectedReaderId = activeLoan != null
+                ? _context.Readers.AsEnumerable().FirstOrDefault(r => r.Id.ToString() == activeLoan.ReaderId.ToString())?.Id
+                : null,
+
+
+                ReadersList = await _context.Readers.Select(r => new SelectListItem
+                {
+                    Value = r.Id.ToString(),
+                    Text = r.FullName
+                }).ToListAsync()
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Guid id, BookEditViewModel vm)
+        {
+            if (id != vm.Id) return BadRequest();
+
+            if (ModelState.IsValid)
+            {
+                var domainBook = await _context.Books.FindAsync(id);
+                if (domainBook == null) return NotFound();
+
+                domainBook.Title = vm.Title;
+                domainBook.Author = vm.Author;
+                domainBook.PublishedYear = vm.PublishedYear;
+
+                var existingLoan = await _context.Loans.FirstOrDefaultAsync(l => l.BookId.ToString() == id.ToString());
+
+                if (vm.SelectedReaderId.HasValue)
+                {
+                    domainBook.IsAvailable = false;
+
+                    if (existingLoan != null)
+                    {
+                        existingLoan.ReaderId = vm.SelectedReaderId.Value;
+                        _context.Loans.Update(existingLoan);
+                    }
+                    else
+                    {
+                        var newLoan = new Loan
+                        {
+                            Id = Guid.NewGuid(),
+                            BookId = domainBook.Id,
+                            ReaderId = vm.SelectedReaderId.Value,
+                            LoanDate = DateOnly.FromDateTime(DateTime.Today),
+                            ReturnDate = DateOnly.FromDateTime(DateTime.Today.AddDays(14))
+                        };
+                        await _context.Loans.AddAsync(newLoan);
+                    }
+                }
+                else
+                {
+                    domainBook.IsAvailable = true;
+
+                    if (existingLoan != null)
+                    {
+                        _context.Loans.Remove(existingLoan);
+                    }
+                }
+
+                _context.Books.Update(domainBook);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            vm.ReadersList = await _context.Readers.Select(r => new SelectListItem
+            {
+                Value = r.Id.ToString(),
+                Text = r.FullName
+            }).ToListAsync();
+
+            return View(vm);
         }
     }
 }
