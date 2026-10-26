@@ -1,0 +1,39 @@
+﻿@model ShopTARpe25.Models.Library.ReaderCreateViewModel
+
+@{
+    ViewData["Title"] = "Add New Reader";
+}
+
+<div class="container mt-4" style="max-width: 600px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-dark text-white py-3">
+            <h4 class="mb-0">👤 Add New Reader Profile</h4>
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label asp-for="FullName" class="form-label fw-bold">Full Name</label>
+                    <input asp-for="FullName" class="form-control" placeholder="e.g., Mari Maasikas" />
+                    <span asp-validation-for="FullName" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Email" class="form-label fw-bold">Email Address</label>
+                    <input asp-for="Email" class="form-control" placeholder="e.g., mari.maasikas@example.com" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <div class="d-flex justify-content-between pt-2 border-top">
+                    <a asp-action="Index" class="btn btn-outline-secondary">Back to Readers</a>
+                    <button type="submit" class="btn btn-success px-4">Register Reader</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

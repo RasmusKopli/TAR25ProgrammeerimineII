@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ShopTARpe25.Core.Domain;
 using ShopTARpe25.Data;
 using ShopTARpe25.Models.Library;
 
@@ -28,6 +29,35 @@ namespace ShopTARpe25.Controllers
             }).ToList();
 
             return View(result);
+        }
+
+        [HttpGet]
+        public IActionResult Create()
+        {
+            var model = new ReaderCreateViewModel();
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(ReaderCreateViewModel vm)
+        {
+            if (ModelState.IsValid)
+            {
+                var domainReader = new Reader
+                {
+                    Id = Guid.NewGuid(),
+                    FullName = vm.FullName,
+                    Email = vm.Email
+                };
+
+                _context.Readers.Add(domainReader);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(vm);
         }
     }
 }
