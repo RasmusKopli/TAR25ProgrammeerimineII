@@ -13,7 +13,7 @@ namespace ShopTARpe25.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string searchName)
         {
             var allLoans = _context.Loans.ToList();
             var books = _context.Books.ToList();
@@ -34,6 +34,13 @@ namespace ShopTARpe25.Controllers
                     ReturnDate = loan.ReturnDate
                 };
             }).ToList();
+
+            if (!string.IsNullOrEmpty(searchName))
+            {
+                compiledLoans = compiledLoans
+                    .Where(l => l.ReaderFullName.Contains(searchName, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
 
             var viewModel = new LoansDashboardViewModel
             {
