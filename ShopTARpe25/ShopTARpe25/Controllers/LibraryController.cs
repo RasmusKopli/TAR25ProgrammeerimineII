@@ -19,26 +19,21 @@ namespace ShopTARpe25.Controllers
             _context = context;
         }
 
-        //Index for Books/Library
         public IActionResult Index(string searchTitle, int? searchYear)
         {
-            // Alustame baaspäringuga
             var query = from book in _context.Books
                         select book;
 
-            // 1. Filtreerime pealkirja järgi (kui otsingukast pole tühi)
             if (!string.IsNullOrEmpty(searchTitle))
             {
                 query = query.Where(b => b.Title.Contains(searchTitle));
             }
 
-            // 2. Filtreerime aasta järgi (kui otsingukast pole tühi)
             if (searchYear.HasValue)
             {
                 query = query.Where(b => b.PublishedYear == searchYear.Value);
             }
 
-            // Viime andmed viewModeli struktuuri
             var result = query.Select(book => new BookIndexViewModel
             {
                 Id = book.Id,
@@ -52,7 +47,6 @@ namespace ShopTARpe25.Controllers
             return View(result);
         }
 
-        //Create for Books
         [HttpGet]
         public IActionResult Create()
         {
@@ -84,7 +78,6 @@ namespace ShopTARpe25.Controllers
             return View(vm);
         }
 
-        //Details for Books
         public IActionResult Details(Guid id)
         {
             var book = _context.Books.FirstOrDefault(b => b.Id == id);
@@ -114,7 +107,6 @@ namespace ShopTARpe25.Controllers
             return View(viewModel);
         }
 
-        //Edit for Books
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
@@ -209,7 +201,6 @@ namespace ShopTARpe25.Controllers
             return View(vm);
         }
 
-        //Delete for books
         [HttpGet]
         public async Task<IActionResult> Delete(Guid id)
         {
