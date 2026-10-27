@@ -1,0 +1,92 @@
+﻿@model ShopTARpe25.Models.Library.LoansDashboardViewModel
+
+@{
+    ViewData["Title"] = "Laenud";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Library Loans Dashboard</h2>
+        <a asp-controller="Library" asp-action="Index" class="btn btn-outline-primary">Back to Library Inventory</a>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-header bg-danger text-white py-3">
+            <h5 class="mb-0 fw-bold">Books Currently Checked Out</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Book Title</th>
+                        <th>Author</th>
+                        <th>Borrowed By</th>
+                        <th>Loan Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.ActiveLoans.Any())
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">No books are loaned right now.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var loan in Model.ActiveLoans)
+                        {
+                            <tr>
+                                <td class="fw-bold">@loan.BookTitle</td>
+                                <td>@loan.BookAuthor</td>
+                                <td class="text-primary fw-bold">@loan.ReaderFullName</td>
+                                <td>@loan.LoanDate.ToString("dd.MM.yyyy")</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-secondary text-white py-3">
+            <h5 class="mb-0 fw-bold">Loan History</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Book Title</th>
+                        <th>Author</th>
+                        <th>Borrowed By</th>
+                        <th>Loan Date</th>
+                        <th>Returned Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.LoanHistory.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">No returns yet.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var history in Model.LoanHistory)
+                        {
+                            <tr>
+                                <td>@history.BookTitle</td>
+                                <td>@history.BookAuthor</td>
+                                <td>@history.ReaderFullName</td>
+                                <td>@history.LoanDate.ToString("dd.MM.yyyy")</td>
+                                <td>
+                                    <span class="badge bg-success">@history.ReturnDate?.ToString("dd.MM.yyyy")</span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

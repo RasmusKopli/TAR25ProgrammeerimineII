@@ -100,11 +100,12 @@ namespace ShopTARpe25.Controllers
         {
             var activeLoan = _context.Loans
                 .AsEnumerable()
-                .FirstOrDefault(l => l.BookId.ToString() == bookId.ToString());
+                .FirstOrDefault(l => l.BookId.ToString() == bookId.ToString() && l.ReturnDate == null);
 
             if (activeLoan != null)
             {
-                _context.Loans.Remove(activeLoan);
+                activeLoan.ReturnDate = DateOnly.FromDateTime(DateTime.Today);
+                _context.Loans.Update(activeLoan);
             }
 
             var book = _context.Books.Find(bookId);
@@ -115,7 +116,6 @@ namespace ShopTARpe25.Controllers
             }
 
             _context.SaveChanges();
-
             return RedirectToAction(nameof(Details), new { id = readerId });
         }
     }
