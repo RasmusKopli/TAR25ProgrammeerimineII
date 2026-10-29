@@ -35,7 +35,6 @@
                         <th>Book Title</th>
                         <th>Author</th>
                         <th>Loaned Date</th>
-                        <th>Return Date</th>
                         <th class="text-end px-4">Actions</th>
                     </tr>
                 </thead>
@@ -56,16 +55,6 @@
                                 <td class="fw-bold text-dark">@book.Title</td>
                                 <td>@book.Author</td>
                                 <td>@book.LoanDate.ToString("dd.MM.yyyy")</td>
-                                <td>
-                                    @if (book.ReturnDate.HasValue)
-                                    {
-                                        <span class="badge bg-success">@book.ReturnDate.Value.ToString("dd.MM.yyyy")</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-muted small fs-6 italic">---</span>
-                                    }
-                                </td>
                                 <td class="text-end px-4">
                                     <form asp-action="ReturnBook" method="post" class="d-inline">
                                         @Html.AntiForgeryToken()

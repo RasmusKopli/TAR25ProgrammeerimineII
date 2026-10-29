@@ -113,7 +113,8 @@ namespace ShopTARpe25.Controllers
             var book = await _context.Books.FirstOrDefaultAsync(b => b.Id == id);
             if (book == null) return NotFound();
 
-            var activeLoan = await _context.Loans.FirstOrDefaultAsync(l => l.BookId.ToString() == book.Id.ToString());
+            var activeLoan = await _context.Loans.FirstOrDefaultAsync(l => l.BookId == id && l.ReturnDate == null);
+
 
 
             var viewModel = new BookEditViewModel
@@ -152,7 +153,7 @@ namespace ShopTARpe25.Controllers
                 domainBook.Author = vm.Author;
                 domainBook.PublishedYear = vm.PublishedYear;
 
-                var existingLoan = await _context.Loans.FirstOrDefaultAsync(l => l.BookId.ToString() == id.ToString());
+                var existingLoan = await _context.Loans.FirstOrDefaultAsync(l => l.BookId == id && l.ReturnDate == null);
 
                 if (vm.SelectedReaderId.HasValue)
                 {
@@ -182,7 +183,8 @@ namespace ShopTARpe25.Controllers
 
                     if (existingLoan != null)
                     {
-                        _context.Loans.Remove(existingLoan);
+                        existingLoan.ReturnDate = DateOnly.FromDateTime(DateTime.Today);
+                        _context.Loans.Update(existingLoan);
                     }
                 }
 

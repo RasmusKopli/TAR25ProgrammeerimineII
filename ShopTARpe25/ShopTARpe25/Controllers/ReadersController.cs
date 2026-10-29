@@ -25,7 +25,7 @@ namespace ShopTARpe25.Controllers
                 Id = reader.Id,
                 FullName = reader.FullName,
                 Email = reader.Email ?? "No Email Registered",
-                ActiveLoansCount = loans.Count(l => l.ReaderId == reader.Id)
+                ActiveLoansCount = loans.Count(l => l.ReaderId == reader.Id && l.ReturnDate == null)
             }).ToList();
 
             return View(result);
@@ -68,7 +68,7 @@ namespace ShopTARpe25.Controllers
                 return NotFound();
             }
 
-            var readerLoans = _context.Loans.Where(l => l.ReaderId.ToString() == id.ToString()).ToList();
+            var readerLoans = _context.Loans.Where(l => l.ReaderId == id && l.ReturnDate == null).ToList();
 
             var borrowedBooks = readerLoans.Select(loan => {
                 var book = _context.Books.FirstOrDefault(b => b.Id.ToString() == loan.BookId.ToString());
@@ -100,7 +100,7 @@ namespace ShopTARpe25.Controllers
         {
             var activeLoan = _context.Loans
                 .AsEnumerable()
-                .FirstOrDefault(l => l.BookId.ToString() == bookId.ToString() && l.ReturnDate == null);
+                .FirstOrDefault(l => l.BookId == bookId && l.ReaderId == readerId);
 
             if (activeLoan != null)
             {
