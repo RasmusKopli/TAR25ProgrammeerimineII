@@ -99,8 +99,7 @@ namespace ShopTARpe25.Controllers
         public IActionResult ReturnBook(Guid bookId, Guid readerId)
         {
             var activeLoan = _context.Loans
-                .AsEnumerable()
-                .FirstOrDefault(l => l.BookId == bookId && l.ReaderId == readerId);
+                .FirstOrDefault(l => l.BookId == bookId && l.ReaderId == readerId && l.ReturnDate == null);
 
             if (activeLoan != null)
             {
