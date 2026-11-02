@@ -1,0 +1,44 @@
+﻿@model ShopTARpe25.Models.Kindergarten.KindergartenCreateViewModel
+
+@{
+    ViewData["Title"] = "Create New Kindergarten";
+}
+
+<div class="container mt-4">
+    <h2>Create New Kindergarten Entry</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Create" method="post">
+                <div class="form-group mb-3">
+                    <label asp-for="KindergartenName" class="form-label">Kindergarten Name</label>
+                    <input asp-for="KindergartenName" class="form-control" />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="GroupName" class="form-label">Group Name</label>
+                    <input asp-for="GroupName" class="form-control" />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="ChildrenCount" class="form-label">Children Count</label>
+                    <input asp-for="ChildrenCount" class="form-control" type="number" />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="TeacherName" class="form-label">Teacher Name</label>
+                    <input asp-for="TeacherName" class="form-control" />
+                </div>
+                
+                <input type="hidden" asp-for="CreatedAt" value="@DateTime.UtcNow" />
+                <input type="hidden" asp-for="ModifiedAt" value="@DateTime.UtcNow" />
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">Save Entry</button>
+                    <a asp-action="Index" class="btn btn-secondary ms-2">Back to List</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
