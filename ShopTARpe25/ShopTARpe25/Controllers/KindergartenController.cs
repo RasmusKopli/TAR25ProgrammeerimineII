@@ -35,6 +35,31 @@ namespace ShopTARpe25.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> Details(Guid id)
+        {
+            var model = await _context.Kindergartens
+                .Where(x => x.Id == id)
+                .Select(x => new KindergartenDetailsViewModel
+                {
+                    Id = x.Id,
+                    KindergartenName = x.KindergartenName,
+                    GroupName = x.GroupName,
+                    ChildrenCount = x.ChildrenCount,
+                    TeacherName = x.TeacherName,
+                    CreatedAt = x.CreatedAt,
+                    ModifiedAt = x.ModifiedAt
+                })
+                .FirstOrDefaultAsync();
+
+            if (model == null)
+            {
+                return NotFound();
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
         public IActionResult Create()
         {
             var model = new KindergartenCreateViewModel();
@@ -58,6 +83,72 @@ namespace ShopTARpe25.Controllers
 
             _context.Add(kindergarten);
             await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(Guid id)
+        {
+            var model = await _context.Kindergartens
+                .Where(x => x.Id == id)
+                .Select(x => new KindergartenEditViewModel
+                {
+                    Id = x.Id,
+                    KindergartenName = x.KindergartenName,
+                    GroupName = x.GroupName,
+                    ChildrenCount = x.ChildrenCount,
+                    TeacherName = x.TeacherName,
+                    CreatedAt = x.CreatedAt
+                })
+                .FirstOrDefaultAsync();
+
+            if (model == null)
+            {
+                return NotFound();
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Guid id, KindergartenEditViewModel vm)
+        {
+            if (id != vm.Id)
+            {
+                return NotFound();
+            }
+
+            var kindergarten = await _context.Kindergartens.FindAsync(id);
+
+            if (kindergarten == null)
+            {
+                return NotFound();
+            }
+
+            kindergarten.KindergartenName = vm.KindergartenName;
+            kindergarten.GroupName = vm.GroupName;
+            kindergarten.ChildrenCount = vm.ChildrenCount;
+            kindergarten.TeacherName = vm.TeacherName;
+            kindergarten.ModifiedAt = DateTime.UtcNow;
+
+            try
+            {
+                _context.Update(kindergarten);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.Kindergartens.Any(e => e.Id == kindergarten.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
             return RedirectToAction(nameof(Index));
         }
