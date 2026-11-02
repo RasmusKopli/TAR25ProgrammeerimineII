@@ -152,5 +152,42 @@ namespace ShopTARpe25.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var model = await _context.Kindergartens
+                .Where(x => x.Id == id)
+                .Select(x => new KindergartenDeleteViewModel
+                {
+                    Id = x.Id,
+                    KindergartenName = x.KindergartenName,
+                    GroupName = x.GroupName,
+                    TeacherName = x.TeacherName
+                })
+                .FirstOrDefaultAsync();
+
+            if (model == null)
+            {
+                return NotFound();
+            }
+
+            return View(model);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        {
+            var kindergarten = await _context.Kindergartens.FindAsync(id);
+
+            if (kindergarten != null)
+            {
+                _context.Kindergartens.Remove(kindergarten);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

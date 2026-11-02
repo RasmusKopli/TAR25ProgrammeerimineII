@@ -1,0 +1,35 @@
+﻿@model ShopTARpe25.Models.Kindergarten.KindergartenDeleteViewModel
+
+@{
+    ViewData["Title"] = "Delete Kindergarten";
+}
+
+<div class="container mt-4">
+    <h2 class=>Delete Kindergarten</h2>
+    <hr />
+
+    <div>
+        <h5 class="mb-0">Confirm Deletion</h5>
+        <br />
+        </div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-5 font-weight-bold">Kindergarten Name:</dt>
+                <dd class="col-sm-7">@Model.KindergartenName</dd>
+
+                <dt class="col-sm-5 font-weight-bold">Group Name:</dt>
+                <dd class="col-sm-7">@Model.GroupName</dd>
+
+                <dt class="col-sm-5 font-weight-bold">Teacher Name:</dt>
+                <dd class="col-sm-7">@Model.TeacherName</dd>
+            </dl>
+        </div>
+        <div>
+            <form asp-action="Delete" method="post">
+                <input type="hidden" asp-for="Id" />
+                <button type="submit" class="btn btn-danger me-2">Delete</button>
+                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
