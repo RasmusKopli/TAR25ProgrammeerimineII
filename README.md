@@ -9,4 +9,4 @@ Sellega võib tekkida raske arendada, võib tekkida andme lekkeid kasutaja poole
 
 
 <h2>Millisesse kihti paigutaksid andmebaasiga suhtlemise MVC- või VIPER-arhitektuuris? Põhjenda oma vastust.</h2>
-MVC-arhitektuuris paigutaks model kihti, sest MVC-s esindab model andmeid--
+MVC-arhitektuuris paigutaks model kihti, sest MVC-s esindab model rakenduse andmeid ja kogu loogikat.
