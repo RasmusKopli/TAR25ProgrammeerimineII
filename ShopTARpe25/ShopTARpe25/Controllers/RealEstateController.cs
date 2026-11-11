@@ -12,21 +12,18 @@ namespace ShopTARpe25.Controllers
     {
         private readonly ShopTARpe25Context _context;
         private readonly IRealEstateServices _realEstateService;
-        private readonly IFileServices _fileService;
 
         public RealEstateController
             (
                 ShopTARpe25Context context,
-                IRealEstateServices realEstateService,
-                IFileServices fileService
+                IRealEstateServices realEstateService
             )
         {
             _context = context;
             _realEstateService = realEstateService;
-            _fileService = fileService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var result = _context.RealEstates
                 .Select(x => new RealEstateIndexViewModel
@@ -36,7 +33,7 @@ namespace ShopTARpe25.Controllers
                     Address = x.Address,
                     RoomNumber = x.RoomNumber,
                     BuildingType = x.BuildingType
-                });
+                }).ToList();
 
             return View(result);
         }
@@ -58,15 +55,7 @@ namespace ShopTARpe25.Controllers
                 Area = vm.Area,
                 Address = vm.Address,
                 RoomNumber = vm.RoomNumber,
-                BuildingType = vm.BuildingType,
-                Files = vm.Files,
-                FileToApiDtos = vm.Image
-                    .Select(file => new FileToApiDto
-                    {
-                        Id = file.ImageId,
-                        ExistingFilePath = file.FilePath,
-                        RealEstateId = file.RealEstateId
-                    }).ToArray()
+                BuildingType = vm.BuildingType
             };
 
             var result = await _realEstateService.Create(dto);
@@ -89,25 +78,15 @@ namespace ShopTARpe25.Controllers
                 return NotFound();
             }
 
-            var images = await _context.FileToApis
-                .Where(x => x.SpaceshipId == id)
-                .Select(y => new ImageViewModel
-                {
-                    FilePath = y.ExistingFilePath,
-                    ImageId = y.Id,
-                    RealEstateId = y.RealEstateId
-                }).ToArrayAsync();
-
             var vm = new RealEstateDetailsViewModel();
 
             vm.Id = realEstate.Id;
             vm.Area = realEstate.Area;
-            vm.Address = vm.Address;
-            vm.RoomNumber = vm.RoomNumber;
-            vm.BuildingType = vm.BuildingType;
+            vm.Address = realEstate.Address;
+            vm.RoomNumber = realEstate.RoomNumber;
+            vm.BuildingType = realEstate.BuildingType;
             vm.CreatedAt = realEstate.CreatedAt;
             vm.ModifiedAt = realEstate.ModifiedAt;
-            vm.Images.AddRange(images);
 
             return View(vm);
         }
@@ -122,16 +101,7 @@ namespace ShopTARpe25.Controllers
                 return NotFound();
             }
 
-            var images = await _context.FileToApis
-                .Where(x => x.RealEstateId == id)
-                .Select(y => new ImageViewModel
-                {
-                    FilePath = y.ExistingFilePath,
-                    ImageId = y.Id,
-                    RealEstateId = y.SpaceshipId
-                }).ToArrayAsync();
-
-            var vm = new RealEstateUpdateViewModel();
+            var vm = new RealEstateCreateUpdateViewModel();
 
             vm.Id = realEstate.Id;
             vm.Area = realEstate.Area;
@@ -140,7 +110,6 @@ namespace ShopTARpe25.Controllers
             vm.BuildingType = realEstate.BuildingType;
             vm.CreatedAt = realEstate.CreatedAt;
             vm.ModifiedAt = realEstate.ModifiedAt;
-            vm.Image.AddRange(images);
 
             return View("CreateUpdate", vm);
         }
@@ -155,14 +124,6 @@ namespace ShopTARpe25.Controllers
                 Address = vm.Address,
                 RoomNumber = vm.RoomNumber,
                 BuildingType = vm.BuildingType,
-                Files = vm.Files,
-                FileToApiDtos = vm.Image
-                    .Select(file => new FileToApiDto
-                    {
-                        Id = file.ImageId,
-                        ExistingFilePath = file.FilePath,
-                        RealEstateId = file.RealEstateId
-                    }).ToArray()
             };
 
             var result = await _realEstateService.Update(dto);
@@ -185,16 +146,7 @@ namespace ShopTARpe25.Controllers
                 return NotFound();
             }
 
-            var images = await _context.FileToApis
-                .Where(x => x.RealEstateId == id)
-                .Select(y => new ImageViewModel
-                {
-                    FilePath = y.ExistingFilePath,
-                    ImageId = y.Id,
-                    RealEstateId = y.SpaceshipId
-                }).ToArrayAsync();
-
-            var vm = new RealEstateUpdateViewModel();
+            var vm = new RealEstateDeleteViewModel();
 
             vm.Id = realEstate.Id;
             vm.Area = realEstate.Area;
@@ -203,7 +155,6 @@ namespace ShopTARpe25.Controllers
             vm.BuildingType = realEstate.BuildingType;
             vm.CreatedAt = realEstate.CreatedAt;
             vm.ModifiedAt = realEstate.ModifiedAt;
-            vm.Image.AddRange(images);
 
             return View(vm);
         }
@@ -214,24 +165,6 @@ namespace ShopTARpe25.Controllers
             var result = await _realEstateService.Delete(id);
 
             if (result == null)
-            {
-                return RedirectToAction(nameof(Index));
-            }
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> RemoveImage(ImageViewModel vm)
-        {
-            var dto = new FileToApiDto
-            {
-                Id = vm.ImageId
-            };
-
-            var image = await _fileService.RemoveImageFromApi(dto);
-
-            if (image == null)
             {
                 return RedirectToAction(nameof(Index));
             }

@@ -33,9 +33,9 @@
                     <td>@realEstate.RoomNumber</td>
                     <td>@realEstate.BuildingType</td>
                     <td>
-                        <a asp-action="details" asp-controller="Spaceship" asp-route-id="@realEstate.Id" type="submit" class="btn btn-info">Details</a>
-                        <a asp-action="update" asp-controller="Spaceship" asp-route-id="@realEstate.Id" type="submit" class="btn btn-success">Update</a>
-                        <a asp-action="delete" asp-controller="Spaceship" asp-route-id="@realEstate.Id" type="submit" class="btn btn-danger">Delete</a>
+                        <a asp-action="details" asp-controller="RealEstate" asp-route-id="@realEstate.Id" type="submit" class="btn btn-info">Details</a>
+                        <a asp-action="update" asp-controller="RealEstate" asp-route-id="@realEstate.Id" type="submit" class="btn btn-success">Update</a>
+                        <a asp-action="delete" asp-controller="RealEstate" asp-route-id="@realEstate.Id" type="submit" class="btn btn-danger">Delete</a>
                     </td>
                 </tr>
                 rowNumber++;

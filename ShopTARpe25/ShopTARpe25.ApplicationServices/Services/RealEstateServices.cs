@@ -12,16 +12,13 @@ namespace ShopTARpe25.ApplicationServices.Services
     public class RealEstateServices : IRealEstateServices
     {
         private readonly ShopTARpe25Context _context;
-        private readonly IFileServices _fileServices;
 
         public RealEstateServices
             (
-                ShopTARpe25Context context,
-                IFileServices fileServices
+                ShopTARpe25Context context
             )
         {
             _context = context;
-            _fileServices = fileServices;
         }
 
         public async Task<RealEstate> Create(RealEstateDto dto)
@@ -35,7 +32,6 @@ namespace ShopTARpe25.ApplicationServices.Services
             domain.BuildingType = dto.BuildingType;
             domain.CreatedAt = DateTime.Now;
             domain.ModifiedAt = DateTime.Now;
-            _fileServices.FilesToApi(dto, domain);
 
             await _context.RealEstates.AddAsync(domain);
             await _context.SaveChangesAsync();
@@ -62,7 +58,6 @@ namespace ShopTARpe25.ApplicationServices.Services
             realEstate.BuildingType = dto.BuildingType;
             realEstate.CreatedAt = dto.CreatedAt;
             realEstate.ModifiedAt = DateTime.Now;
-            _fileServices.FilesToApi(dto, realEstate);
 
             _context.RealEstates.Update(realEstate);
             await _context.SaveChangesAsync();
@@ -75,16 +70,6 @@ namespace ShopTARpe25.ApplicationServices.Services
             var result = await _context.RealEstates
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            var images = await _context.FileToApis
-                .Where(x => x.RealEstateId == id)
-                .Select(y => new FileToApiDto
-                {
-                    Id = y.Id,
-                    RealEstateId = y.RealEstateId,
-                    ExistingFilePath = y.ExistingFilePath
-                }).ToArrayAsync();
-
-            await _fileServices.RemoveImagesFromApi(images);
             _context.RealEstates.Remove(result);
             await _context.SaveChangesAsync();
 
