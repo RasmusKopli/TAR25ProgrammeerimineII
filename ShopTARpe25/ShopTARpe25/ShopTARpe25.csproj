@@ -22,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\RealEstate\" />
     <Folder Include="wwwroot\multipleFileUpload\" />
   </ItemGroup>
 

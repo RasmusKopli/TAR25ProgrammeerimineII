@@ -178,9 +178,9 @@ namespace ShopTARpe25.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var spaceship = await _realEstateService.DetailsAsync(id);
+            var realEstate = await _realEstateService.DetailsAsync(id);
 
-            if (spaceship == null)
+            if (realEstate == null)
             {
                 return NotFound();
             }
@@ -197,13 +197,46 @@ namespace ShopTARpe25.Controllers
             var vm = new RealEstateUpdateViewModel();
 
             vm.Id = realEstate.Id;
-            vm.Area = v.Area;
-            vm.Address = vm.Address;
-            vm.RoomNumber = vm.RoomNumber;
-            vm.BuildingType = vm.BuildingType;
+            vm.Area = realEstate.Area;
+            vm.Address = realEstate.Address;
+            vm.RoomNumber = realEstate.RoomNumber;
+            vm.BuildingType = realEstate.BuildingType;
             vm.CreatedAt = realEstate.CreatedAt;
             vm.ModifiedAt = realEstate.ModifiedAt;
             vm.Image.AddRange(images);
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteConfirmation(Guid id)
+        {
+            var result = await _realEstateService.Delete(id);
+
+            if (result == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveImage(ImageViewModel vm)
+        {
+            var dto = new FileToApiDto
+            {
+                Id = vm.ImageId
+            };
+
+            var image = await _fileService.RemoveImageFromApi(dto);
+
+            if (image == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }
