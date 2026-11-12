@@ -51,11 +51,20 @@ namespace ShopTARpe25.Controllers
         {
             var dto = new RealEstateDto
             {
-                Id = vm.Id,
                 Area = vm.Area,
                 Address = vm.Address,
                 RoomNumber = vm.RoomNumber,
-                BuildingType = vm.BuildingType
+                BuildingType = vm.BuildingType,
+                Files = vm.Files,
+                Image = vm.Image
+                    .Select(x => new FileToDatabaseDto
+                    {
+                        Id = x.ImageId,
+                        ImageData = x.ImageData,
+                        ImageTitle = x.ImageTitle,
+                        RealEstateId = x.RealEstateId
+
+                    }).ToArray()
             };
 
             var result = await _realEstateService.Create(dto);
