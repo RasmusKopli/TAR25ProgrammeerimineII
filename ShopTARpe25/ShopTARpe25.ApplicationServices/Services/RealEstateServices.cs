@@ -12,13 +12,16 @@ namespace ShopTARpe25.ApplicationServices.Services
     public class RealEstateServices : IRealEstateServices
     {
         private readonly ShopTARpe25Context _context;
+        private readonly IFileServices _fileServices;
 
         public RealEstateServices
             (
-                ShopTARpe25Context context
+                ShopTARpe25Context context,
+                IFileServices fileServices
             )
         {
             _context = context;
+            _fileServices = fileServices;
         }
 
         public async Task<RealEstate> Create(RealEstateDto dto)
@@ -35,6 +38,11 @@ namespace ShopTARpe25.ApplicationServices.Services
 
             await _context.RealEstates.AddAsync(domain);
             await _context.SaveChangesAsync();
+
+            if (dto.Files != null)
+            {
+                _fileServices.UploadFilesToDatabase(dto, domain);
+            }
 
             return domain; 
         }
