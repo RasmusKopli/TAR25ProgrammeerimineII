@@ -13,15 +13,18 @@ namespace ShopTARpe25.Controllers
     {
         private readonly ShopTARpe25Context _context;
         private readonly IRealEstateServices _realEstateService;
+        private readonly IFileServices _fileService;
 
         public RealEstateController
             (
                 ShopTARpe25Context context,
-                IRealEstateServices realEstateService
+                IRealEstateServices realEstateService,
+                IFileServices fileService
             )
         {
             _context = context;
             _realEstateService = realEstateService;
+            _fileService = fileService;
         }
 
         public async Task<IActionResult> Index()
@@ -57,7 +60,7 @@ namespace ShopTARpe25.Controllers
                 RoomNumber = vm.RoomNumber,
                 BuildingType = vm.BuildingType,
                 Files = vm.Files,
-                Image = vm.Image
+                Image = vm.Images
                     .Select(x => new FileToDatabaseDto
                     {
                         Id = x.ImageId,
@@ -147,8 +150,13 @@ namespace ShopTARpe25.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Update(RealEstateUpdateViewModel vm)
+        public async Task<IActionResult> Update(RealEstateCreateUpdateViewModel vm)
         {
+            if (!ModelState.IsValid)
+            {
+                return View("CreateUpdate", vm);
+            }
+
             var dto = new RealEstateDto
             {
                 Id = vm.Id,
@@ -156,12 +164,24 @@ namespace ShopTARpe25.Controllers
                 Address = vm.Address,
                 RoomNumber = vm.RoomNumber,
                 BuildingType = vm.BuildingType,
+                CreatedAt = vm.CreatedAt,
+                ModifiedAt = vm.ModifiedAt,
+                Files = vm.Files,
+                Image = vm.Images
+                    .Select(x => new FileToDatabaseDto
+                    {
+                        Id = x.ImageId,
+                        ImageData = x.ImageData,
+                        ImageTitle = x.ImageTitle,
+                        RealEstateId = x.RealEstateId
+                    }).ToArray()
             };
 
             var result = await _realEstateService.Update(dto);
 
             if (result == null)
             {
+                ModelState.AddModelError("", "Real estate update failed.");
                 return RedirectToAction(nameof(Index));
             }
 
@@ -178,6 +198,8 @@ namespace ShopTARpe25.Controllers
                 return NotFound();
             }
 
+            RealEstateImageViewModel[] images = await FileFromDatabase(id);
+            
             var vm = new RealEstateDeleteViewModel();
 
             vm.Id = realEstate.Id;
@@ -187,6 +209,7 @@ namespace ShopTARpe25.Controllers
             vm.BuildingType = realEstate.BuildingType;
             vm.CreatedAt = realEstate.CreatedAt;
             vm.ModifiedAt = realEstate.ModifiedAt;
+            vm.Images.AddRange(images);
 
             return View(vm);
         }
@@ -202,6 +225,26 @@ namespace ShopTARpe25.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveImage(RealEstateImageViewModel vm)
+        {
+            var dto = new FileToDatabaseDto()
+            {
+                Id = vm.ImageId
+            };
+
+            var image = await _fileService.RemoveImageFromDatabase(dto);
+
+            var realEstateId = image.RealEstateId;
+
+            if (image == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return RedirectToAction(nameof(Update), new {id = realEstateId});
         }
     }
 }

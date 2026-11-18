@@ -4,6 +4,7 @@ using ShopTARpe25.Core.Domain;
 using ShopTARpe25.Core.Dto;
 using ShopTARpe25.Core.ServiceInterface;
 using ShopTARpe25.Data;
+using static System.Net.Mime.MediaTypeNames;
 
 
 namespace ShopTARpe25.ApplicationServices.Services
@@ -135,6 +136,20 @@ namespace ShopTARpe25.ApplicationServices.Services
                     }
                 }
             }
+        }
+
+        public async Task<FileToDatabase> RemoveImageFromDatabase(FileToDatabaseDto dto)
+        {
+            //Faili kustutamine Id abil
+            var images = await _context.FileToDatabases
+                .FirstOrDefaultAsync(x => x.Id == dto.Id);
+
+
+            _context.FileToDatabases.Remove(images);
+            await _context.SaveChangesAsync();
+
+            return images;
+
         }
     }
 }
