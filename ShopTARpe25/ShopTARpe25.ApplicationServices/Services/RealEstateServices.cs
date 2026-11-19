@@ -36,13 +36,15 @@ namespace ShopTARpe25.ApplicationServices.Services
             domain.CreatedAt = DateTime.Now;
             domain.ModifiedAt = DateTime.Now;
 
-            await _context.RealEstates.AddAsync(domain);
-            await _context.SaveChangesAsync();
-
             if (dto.Files != null)
             {
                 _fileServices.UploadFilesToDatabase(dto, domain);
             }
+
+            await _context.RealEstates.AddAsync(domain);
+            await _context.SaveChangesAsync();
+
+            
 
             return domain; 
         }
@@ -67,6 +69,11 @@ namespace ShopTARpe25.ApplicationServices.Services
             realEstate.CreatedAt = dto.CreatedAt;
             realEstate.ModifiedAt = DateTime.Now;
 
+            if (dto.Files != null)
+            {
+                _fileServices.UploadFilesToDatabase(dto, realEstate);
+            }
+
             _context.RealEstates.Update(realEstate);
             await _context.SaveChangesAsync();
 
@@ -87,7 +94,10 @@ namespace ShopTARpe25.ApplicationServices.Services
                     RealEstateId = y.RealEstateId,
                 }).ToArrayAsync();
 
-            _context.RealEstates.Remove(result);
+            await _context.RealEstates
+                .Where(x => x.Id == id)
+                .ExecuteDeleteAsync();
+
             await _context.SaveChangesAsync();
 
             return result;
