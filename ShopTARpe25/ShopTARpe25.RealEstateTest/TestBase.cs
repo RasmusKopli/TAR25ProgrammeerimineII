@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using ShopTARpe25.RealEstateTest.Macros;
+using Microsoft.Extensions.Hosting;
+using ShopTARpe25.RealEstateTest.Mock;
 
 namespace ShopTARpe25.RealEstateTest
 {
@@ -30,6 +32,11 @@ namespace ShopTARpe25.RealEstateTest
         {
             //Seob liidese konkreetse teostusega, et testid saaksid kinnisvarateenuseid kasutada.
             services.AddScoped<IRealEstateServices, RealEstateServices>();
+            //miks pidi lisama kaks service'it juurde, kuigi me tahame ainult testida ainult RealEstate CRUD'i?
+            //Service'id on vajalikud sellepärast, et see oli seotud failide lisamisega
+            //ja failide lisamine omakorda oli seoses IHostEnvironment'iga
+            services.AddScoped<IFileServices, FileServices>();
+            services.AddScoped<IHostEnvironment, MockIHostEnvironment>();
 
             //Päris andmebaasi asemel luuakse operatiivmällu ajutine andmebaas nimega "TEST".
             //Sellega muudab testid kiireks ega riku tegelikke andmeid.
