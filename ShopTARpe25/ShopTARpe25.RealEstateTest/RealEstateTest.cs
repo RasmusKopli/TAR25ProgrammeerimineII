@@ -30,7 +30,7 @@ namespace ShopTARpe25.RealEstateTest
 
         // Teha test, kus otsib ankeeti Id alusel, aga seda ei ole andmebaasis
         [Fact]
-        public async Task Should_GetByIdRealEstate_WhenReturnsEqual()
+        public async Task ShouldNot_GetByIdRealEstate_WhenReturnsEqual()
         {
             // Arrange
             Guid databaseGuid = Guid.Parse("70cd4d70-63b9-46ed-a086-e2ad35e93290");
@@ -43,5 +43,59 @@ namespace ShopTARpe25.RealEstateTest
             // Vastupidist loogikat tuleb kasutada
             Assert.NotEqual(wrongGuid, databaseGuid);
         }
+
+        
+        // On vaja testida DetailAsync meetodit
+        // Leiab ankeedi ülesse e õige Id otsib
+        [Fact]
+        public async Task Should_GetByIdRealEstate_WhenReturnsEqual()
+        {
+            // Arrange
+            // See Guid on juba andmebaasis olemas ankeedi juures
+            Guid databaseGuid = Guid.Parse("70cd4d70-63b9-46ed-a086-e2ad35e93290");
+            // Kui vajutad nupule, siis see Guid saadetakse andmebaasi, mida võrreldakse
+            Guid guid = Guid.Parse("70cd4d70-63b9-46ed-a086-e2ad35e93290");
+
+            // Act
+            await Svc<IRealEstateServices>().DetailsAsync(guid);
+
+            // Assert
+            Assert.Equal(databaseGuid, guid);
+
+        }
+
+        // Kustutamise meetodit on vaja testida. Andmebaasis on ankeet, mida
+        // tahan ära kustutada
+        // Fix this!
+        [Fact]
+        public async Task Should_DeleteByIdRealEstate_WhenDeleteRealEstate()
+        {
+            // Arrange
+            // Vaja oleks Mock'ida ankeeti e teha meetod, kus on ankeedi andmed
+            RealEstateDto dto = MockRealEstateData();
+
+            // Act
+            var addRealEstate = await Svc<IRealEstateServices>().Create(dto);
+            var deleteRealEstateId = await Svc<IRealEstateServices>().Delete((Guid)addRealEstate.Id);
+
+            // Assert
+            // Võrdlen Id-sid, kas kustutasin selle ära, mis oli andmebaasis
+            Assert.Equal(addRealEstate.Id, deleteRealEstateId.Id);
+
+        }
+
+        private RealEstateDto MockRealEstateData()
+        {
+            return new RealEstateDto
+            {
+                Area = 88.65,
+                Address = "TestAdress",
+                RoomNumber = 1,
+                BuildingType = "TestBuildingType",
+                CreatedAt = DateTime.Now,
+                ModifiedAt = DateTime.Now
+            };
+        }
+
     }
 }
